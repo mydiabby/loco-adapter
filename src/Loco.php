@@ -47,7 +47,7 @@ class Loco implements Storage, TransferableStorage
      */
     public function __construct(LocoClient $client, array $projects)
     {
-        $this->client = $client;
+        $this->client   = $client;
         $this->projects = $projects;
     }
 
@@ -73,7 +73,11 @@ class Loco implements Storage, TransferableStorage
      */
     public function create(MessageInterface $message)
     {
-        $project = $this->getProject($message->getDomain());
+        if (!$message->getKey()) {
+            return;
+        }
+
+        $project    = $this->getProject($message->getDomain());
         $isNewAsset = true;
 
         try {
@@ -172,7 +176,7 @@ class Loco implements Storage, TransferableStorage
                     $params = [
                         'format' => 'symfony',
                         'status' => '!untranslated,!rejected',
-                        'index' => $project->getIndexParameter(),
+                        'index'  => $project->getIndexParameter(),
                     ];
 
                     if ($project->isMultiDomain()) {
@@ -198,8 +202,8 @@ class Loco implements Storage, TransferableStorage
                 $data = XliffConverter::catalogueToContent($catalogue, $domain);
                 $params = [
                     'locale' => $locale,
-                    'async' => 1,
-                    'index' => $project->getIndexParameter(),
+                    'async'  => 1,
+                    'index'  => $project->getIndexParameter(),
                 ];
 
                 if ($project->isMultiDomain()) {
